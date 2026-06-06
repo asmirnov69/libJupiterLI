@@ -7,6 +7,8 @@ name = "libjupiterli"
 version = "0.0.0"
 dependencies = [
     "typer",
+    "redis", "clickhouse-driver",
+    "rdflib", "pyshacl",
 ]
 
 [project.scripts]
