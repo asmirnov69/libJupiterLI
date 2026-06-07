@@ -39,6 +39,17 @@ public:
     
     return true;
   }
+
+  CircularBuffer() {
+    this->initialize(0);
+  }
+    
+  CircularBuffer(CircularBuffer<T>&& o) {
+    this->capacity_ = o.capacity_;
+    this->head_.store(o.head_);
+    this->tail_.store(o.tail_);
+    o.initialize(0);
+  }
   
 private:
   size_t increment(size_t x) const { return (x + 1) % capacity_; }  

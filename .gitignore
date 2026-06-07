@@ -1,4 +1,5 @@
 *~
+*.o
 *.tsk
 *.egg-info
 __pycache__

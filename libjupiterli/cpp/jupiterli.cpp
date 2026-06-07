@@ -1,43 +1,55 @@
 #include "jupiterli.h"
+#include "circular-buffer.h"
+#include <vector>
+#include <unordered_map>
+//#include <map>
 #include <iostream>
 
 using namespace std;
 
-vector<CircularBuffer<T>> ringbufs;
-unordered_map<string, int> keys_d; // key -> ringbuf idx in ringbufs
+struct TelemetryPoint {
+  unsigned long serial_no;
+  double ts, v;
+};
 
-static size_t get_ringbuf_idx(const char* key, size_t vtype_size)
+vector<CircularBuffer<TelemetryPoint>> ringbufs;
+unordered_map<string, int> keys_d; // key -> idx in ringbufs
+
+static size_t get_ringbuf_idx(const char* key)
 {
   auto it = keys_d.find(key);
   if (it == keys_d.end()) {
-    string uuid = ...;
-    ringbuf_t* ringbuf_o = new ringbuf_t();
-    ringbuf_setup(ringbuf_o, 1, 10000 * vtype_size);
-    auto ringbuf_worker = ringbuf_register(ringbuf_o, 0);
-    ringbufs.emplace_back(std::move({ringbuf_o, ringbuf_worker}));
+    cout << "insert " << keys_d.size() << " " << key << endl;
+    auto uuid = "uuid-goes-here";
+    CircularBuffer<TelemetryPoint> b;
+    b.initialize(sizeof(TelemetryPoint) * 10000);
     auto new_idx = ringbufs.size();
-    //int some_v = expensive_computation();
-    it = keys_d.insert({key, new_idx}).first;
+    ringbufs.emplace_back(std::move(b));
+    //it = keys_d.insert({key, new_idx}).first;
+    keys_d[key] = new_idx; it = keys_d.find(key);
   }
 
+  cout << "v: " << ringbufs.size() << " " << keys_d.size() << endl;
+  for (auto it: keys_d) {
+    cout << "keys_d: " << it.first << " " << it.second << endl;
+  }
   int w_ringbuf_idx = it->second;
+  cout << "w_ringbuf_idx: " << w_ringbuf_idx << endl;
   return w_ringbuf_idx;
+}
+
+void jupiterli::save_run_dets()
+{
+  cout << "jupiterli::save_run_dets()" << endl;
 }
 
 void jupiterli::add_ts_point(const char* key, double ts, double v)
 {
-  cout << "jupiterli::add_ts_point: " << key << " " << ts << " " << v << endl;
+  cout << "jupiterli::add_ts_point: " << key << " " << (void*)key << " " << ts << " " << v << endl;
 
-  // find ringbuf corresponding to key
   auto w_ringbuf_idx = get_ringbuf_idx(key);
-  auto w_ringbuf_o, w_ringbuf_worker = ringbufs.at(w_ringbuf_idx);
-  auto w_offset = ringbuf_acquire(w_ringbuf_o, w_ringbuf_worker, sizeof(tuple<double, double>));
-  if (w_offset == -1) { // need to release one spot
-    ringbuf_consume(w_ringbuf_o, &w_offset); // offset will be set by consume ???
-    ringbuf_release(w_ringbuf_o, sizeof(...) * 1);
-  }
-  memcpy(&(w_ringbuf->workers[0].data[w_offset]), sizeof(...), {ts, v});
-  ringbuf_produce(w_ringbuf_o, w_ringbuf_worker);
-  
+  auto& ringbuf = ringbufs.at(w_ringbuf_idx);
+  //while (!ringbuf.push_back({0, ts, v})) {}
+  ringbuf.push_back({0, ts, v});
 }
 
