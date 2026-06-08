@@ -1,5 +1,4 @@
 *~
 *.o
 *.tsk
-*.egg-info
-__pycache__
+build*/
