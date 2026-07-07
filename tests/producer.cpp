@@ -1,12 +1,18 @@
 #include <iostream>
-#include <jupiterli.h>
+#include <chrono>
+#include <unistd.h>
+#include <jupiterli/redis-based.h>
+
 using namespace std;
+namespace jli = jupiterli::redis_based;
 
 int main()
 {
-  jupiterli::save_run_dets();
+  jli::save_run_dets();
   for (int i = 0; i < 100; i++) {
-    cout << i << endl;
-    jupiterli::add_ts_point("test", i, i);
+    double ts = std::chrono::duration<double>(std::chrono::system_clock::now().time_since_epoch()).count();
+    cout << ts << " " << i << endl;
+    jli::add_ts_point("test", ts, i);
+    sleep(1);
   }
 }
