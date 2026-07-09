@@ -148,7 +148,7 @@ void jupiterli::redis_based::save_series_dets(const string& series_id, const str
     {"key", key}
   };
   std::string reply = two_way_call(stream_ctx, sub_ctx, "telemetry-admin", "series_dets", row_json);
-  std::cout << "Reply: " << reply << std::endl;
+  //std::cout << "Reply: " << reply << std::endl;
 }
 
 void jupiterli::redis_based::save_run_dets()
@@ -165,10 +165,9 @@ void jupiterli::redis_based::save_run_dets()
   }  
   
   json row_json = build_run_dets_row(run_id);
-  std::cout << "row_json: " << row_json << std::endl;
-  //row_json["id"] = 123; row_json["name"] = "Alice";
+  //std::cout << "row_json: " << row_json << std::endl;
   std::string reply = two_way_call(stream_ctx, sub_ctx, "telemetry-admin", "runs_dets", row_json);
-  std::cout << "Reply: " << reply << std::endl;
+  //std::cout << "Reply: " << reply << std::endl;
 }
 
 void jupiterli::redis_based::add_ts_point(const char* key, double ts, double value)
@@ -190,4 +189,9 @@ void jupiterli::redis_based::add_ts_point(const char* key, double ts, double val
 	       "XADD %s MAXLEN ~ 10000 * data %b",
 	       "telemetry",
 	       msg_json_s.data(), msg_json_s.size());
+}
+
+void jupiterli::redis_based::add_serial_point(const char* key, double value)
+{
+  add_ts_point(key, -1.0, value);
 }
