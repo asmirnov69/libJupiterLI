@@ -1,10 +1,10 @@
 #include <iostream>
 #include <chrono>
 #include <unistd.h>
-#include <jupiterli/redis-based.h>
+#include <libjupiterli/libjupiterli.h>
 
 using namespace std;
-namespace jli = jupiterli::redis_based;
+namespace jli = libjupiterli;
 
 int main()
 {

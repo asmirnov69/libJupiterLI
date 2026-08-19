@@ -4,7 +4,9 @@
 #include <limits.h>
 #include "utils.h"
 
-std::string jupiterli::make_uuid()
+using namespace std;
+
+std::string libjupiterli::make_uuid()
 {
   std::random_device rd;
   std::mt19937 gen(rd());
@@ -25,7 +27,7 @@ std::string jupiterli::make_uuid()
   return uuid;
 }
 
-std::vector<std::string> jupiterli::get_command_line()
+std::vector<std::string> libjupiterli::get_command_line()
 {
   std::ifstream f("/proc/self/cmdline", std::ios::binary);
 
@@ -39,7 +41,7 @@ std::vector<std::string> jupiterli::get_command_line()
 }
 
 // helper: get executable path (Linux)
-std::string jupiterli::get_executable()
+std::string libjupiterli::get_executable()
 {
   char buf[PATH_MAX];
   ssize_t len = readlink("/proc/self/exe", buf, sizeof(buf) - 1);
@@ -51,8 +53,51 @@ std::string jupiterli::get_executable()
 }
 
 // helper: get env var with fallback
-std::string jupiterli::get_env(const char* key)
+std::string libjupiterli::get_env(const char* key)
 {
   const char* v = std::getenv(key);
   return v ? std::string(v) : "";
 }
+
+nlohmann::json libjupiterli::get_run_dets()
+{
+  std::string run_id = make_uuid();
+  char host[256];
+  gethostname(host, sizeof(host));
+  
+  pid_t pid = getpid();
+  
+  // time.time()
+  double created_ts = std::chrono::duration<double>(std::chrono::system_clock::now().time_since_epoch()).count();
+
+  auto argv = get_command_line();
+  std::size_t argc = argv.size();
+  
+  // sys.argv  
+  std::string args;
+  for (std::size_t i = 0; i < argc; i++) {
+    if (i > 0) {
+      args += " ";
+    }
+    args += argv[i];
+  }
+
+  // env fallback logic
+  std::string run_label = get_env("RUN_LABEL");
+  if (run_label.empty()) {
+    run_label = get_env("RL");
+  }
+
+  nlohmann::json row{
+    {"run_id", run_id},
+    {"created_ts", created_ts},
+    {"host", std::string(host)},
+    {"pid", pid},
+    {"argv0", get_executable()},
+    {"args", args},
+    {"run_label", run_label}
+  };
+  
+  return row;
+}
+
