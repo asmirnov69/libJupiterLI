@@ -1,3 +1,6 @@
 [submodule "external/cpp-httplib"]
 	path = external/cpp-httplib
 	url = https://github.com/yhirose/cpp-httplib.git
+[submodule "external/paho.mqtt.embedded-c"]
+	path = external/paho.mqtt.embedded-c
+	url = https://github.com/eclipse-paho/paho.mqtt.embedded-c.git
