@@ -1,0 +1,12 @@
+paho.mqtt.client c++ client no run loop
+
+I need only send strings to certain topics
+
+will the code above spawn any threads?
+
+is any other mqtt client package which will not use threads. I need only connect and publish
+
+Paho embedded c repo looks fresh, i would use this one, can you give connect and publish example on c++. Use C tcp sockets and only std::* c++ is allowed
+
+i need to repetative publish ops on various topics. What is recommended approache: connect at start / disconnect at the end?
+
