@@ -89,6 +89,7 @@ nlohmann::json libjupiterli::get_run_dets()
   }
 
   nlohmann::json row{
+    {"table__", "runs"},
     {"run_id", run_id},
     {"created_ts", created_ts},
     {"host", std::string(host)},
