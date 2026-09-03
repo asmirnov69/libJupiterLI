@@ -13,7 +13,7 @@ execute_process(
 message("top is ${top}")
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g -std=c++20 -Wall")
-set(CMAKE_SHARED_LINKER_FLAGS "-Wl,-z,defs")
+#set(CMAKE_SHARED_LINKER_FLAGS "-Wl,-z,defs")
 
 # Dependencies
 #set(HTTPLIB_BUILD_TESTING OFF CACHE BOOL "" FORCE)
