@@ -1,5 +1,5 @@
-#include "libjupiterli/libjupiterli.h"
-#include <cpp-httplib/httplib.h>
+#include <libjupiterli/libjupiterli.h>
+#include <httplib.h>
 #include <nlohmann/json.hpp>
 #include "utils.h"
 
@@ -37,6 +37,8 @@ void libjupiterli::save_run_dets()
 
 void libjupiterli::save_series_dets(const char* key)
 {
+  //#pragma message("NB: save_series_dets disabled")
+  //#if 0
   auto row_j = get_series_dets(key);
   httplib::Client cli("http://h1:8000");
   auto req = nlohmann::json{{"table", "series_dets"}, {"row", row_j.get<string>()}};
@@ -44,6 +46,7 @@ void libjupiterli::save_series_dets(const char* key)
     cout << "save_series_dets: " << res->status << endl;
     cout << "save_series_dets: " << res->body << endl;
   }
+  //#endif
 }
 
 void libjupiterli::add_ts_point(const char* key, double ts, double value)

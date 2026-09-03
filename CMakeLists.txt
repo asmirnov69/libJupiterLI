@@ -3,13 +3,23 @@ cmake_minimum_required(VERSION 3.22)
 set(CMAKE_VERBOSE_MAKEFILE ON)
 
 project(libjupiterli)
-exec_program(git ARGS "rev-parse --show-toplevel" OUTPUT_VARIABLE top)
+
+#exec_program(git ARGS "rev-parse --show-toplevel" OUTPUT_VARIABLE top)
+execute_process(
+    COMMAND git rev-parse --show-toplevel
+    OUTPUT_VARIABLE top
+    OUTPUT_STRIP_TRAILING_WHITESPACE
+)
+message("top is ${top}")
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g -std=c++20 -Wall")
 set(CMAKE_SHARED_LINKER_FLAGS "-Wl,-z,defs")
 
-# get access to cpp-httplib/httplib.h
-include_directories("..")
+# Dependencies
+set(HTTPLIB_BUILD_TESTING OFF CACHE BOOL "" FORCE)
+set(HTTPLIB_INSTALL OFF CACHE BOOL "" FORCE)
+add_subdirectory(external/cpp-httplib ${CMAKE_BINARY_DIR}/cpp-httplib)
+
 include_directories(${top}/include)
 
 add_subdirectory(src)
