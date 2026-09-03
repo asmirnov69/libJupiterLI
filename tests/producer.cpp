@@ -3,6 +3,8 @@
 #include <unistd.h>
 #include <libjupiterli/libjupiterli.h>
 
+#include <MQTTPacket.h>
+
 using namespace std;
 namespace jli = libjupiterli;
 

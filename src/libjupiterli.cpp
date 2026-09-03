@@ -3,6 +3,9 @@
 #include <nlohmann/json.hpp>
 #include "utils.h"
 
+#include <MQTTPacket.h>
+
+
 using namespace std;
 
 
@@ -37,8 +40,8 @@ void libjupiterli::save_run_dets()
 
 void libjupiterli::save_series_dets(const char* key)
 {
-  //#pragma message("NB: save_series_dets disabled")
-  //#if 0
+#pragma message("NB: save_series_dets disabled")
+#if 0
   auto row_j = get_series_dets(key);
   httplib::Client cli("http://h1:8000");
   auto req = nlohmann::json{{"table", "series_dets"}, {"row", row_j.get<string>()}};
@@ -46,7 +49,7 @@ void libjupiterli::save_series_dets(const char* key)
     cout << "save_series_dets: " << res->status << endl;
     cout << "save_series_dets: " << res->body << endl;
   }
-  //#endif
+#endif
 }
 
 void libjupiterli::add_ts_point(const char* key, double ts, double value)
