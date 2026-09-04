@@ -1,6 +1,8 @@
 // -*- c++ -*-
 #pragma once
 
+#include <string>
+
 // Define a structured context to manage our threadless state engine
 struct MqttSyncClient
 {
