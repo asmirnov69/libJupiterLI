@@ -14,9 +14,16 @@ MqttSyncClient mqttc;
 
 void libjupiterli::save_run_dets()
 {
+  if (mqttc.socket_fd == -1) {
+    if (!mqttc.connect_to_broker("127.0.0.1", 1883, "libjuputerli")) {
+      throw std::runtime_error("libjuputerli::save_run_dets: can't connect to mqtt broker");
+    }
+  }
+  
   httplib::Client cli("http://h1:8000");
-  auto req = get_run_dets();
-  if (auto res = cli.Post("/app/add-row", req.get<string>(), "application/json")) {
+  auto req_j = get_run_dets(run_id);
+  auto req = req_j.dump();
+  if (auto res = cli.Post("/api/add-row", req, "application/json")) {
     cout << "save_run_dets: " << res->status << endl;
     cout << "save_run_dets: " << res->body << endl;
   }
@@ -25,8 +32,9 @@ void libjupiterli::save_run_dets()
 static void save_series_dets(const string& series_id, const string& run_id, const char* key)
 {
   httplib::Client cli("http://h1:8000");
-  auto req = nlohmann::json{{"table__", "series"}, {"series_id", series_id}, {"run_id", run_id}, {"key", key}};
-  if (auto res = cli.Post("/app/add-row", req.get<string>(), "application/json")) {
+  auto req_j = nlohmann::json{{"table__", "series"}, {"series_id", series_id}, {"run_id", run_id}, {"key", key}};
+  auto req = req_j.dump();
+  if (auto res = cli.Post("/api/add-row", req, "application/json")) {
     cout << "save_series_dets: " << res->status << endl;
     cout << "save_series_dets: " << res->body << endl;
   }
@@ -50,8 +58,8 @@ void libjupiterli::add_ts_point(const char* key, double ts, double value)
     save_series_dets(series_id, run_id, key);
   }
   run_serial_num++;
-  auto rec = nlohmann::json::array({{"table__", "series_points"}, {"series_id", series_id}, {"timestamp", ts}, {"value", value}, {"run_serial_num", run_serial_num}});
-
+  auto rec_j = nlohmann::json::array({{{"table__", "series_points"}, {"series_id", series_id}, {"timestamp", ts}, {"value", value}, {"run_serial_num", run_serial_num}}});
+  auto rec = rec_j.dump();
   mqttc.publish_string(std::format("telemetry/series/{}", series_id), rec);
 }
 

@@ -59,9 +59,8 @@ std::string libjupiterli::get_env(const char* key)
   return v ? std::string(v) : "";
 }
 
-nlohmann::json libjupiterli::get_run_dets()
+nlohmann::json libjupiterli::get_run_dets(const string& run_id)
 {
-  std::string run_id = make_uuid();
   char host[256];
   gethostname(host, sizeof(host));
   
@@ -88,16 +87,14 @@ nlohmann::json libjupiterli::get_run_dets()
     run_label = get_env("RL");
   }
 
-  nlohmann::json row{
-    {"table__", "runs"},
-    {"run_id", run_id},
-    {"created_ts", created_ts},
-    {"host", std::string(host)},
-    {"pid", pid},
-    {"argv0", get_executable()},
-    {"args", args},
-    {"run_label", run_label}
-  };
+  auto row = nlohmann::json{{"table__", "runs"},
+			    {"run_id", run_id},
+			    {"created_ts", created_ts},
+			    {"host", std::string(host)},
+			    {"pid", pid},
+			    {"argv0", get_executable()},
+			    {"args", args},
+			    {"run_label", run_label}};
   
   return row;
 }
