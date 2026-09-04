@@ -9,17 +9,18 @@
 using namespace std;
 
 
-map<string, string> series_d; // key -> series_id    
+map<string, string> series_ids; // key -> series_id    
+string run_id = libjupiterli::make_uuid();
 unsigned long run_serial_num = 0;
 
 static pair<bool, string> get_series_id(const string& run_id, const string& key)
 {
-  auto it = series_d.find(key);
-  bool new_key = it == series_d.end();
+  auto it = series_ids.find(key);
+  bool new_key = it == series_ids.end();
   string series_id;
   if (new_key) {
     series_id = run_id + "---" + std::to_string(std::hash<std::string>{}(key));
-    series_d[key] = series_id;
+    series_ids[key] = series_id;
   } else {
     series_id = (*it).second;
   }
@@ -37,7 +38,7 @@ void libjupiterli::save_run_dets()
   }
 }
 
-void libjupiterli::save_series_dets(const string& series_id, const string& run_id, const char* key)
+static void save_series_dets(const string& series_id, const string& run_id, const char* key)
 {
   httplib::Client cli("http://h1:8000");
   auto req = nlohmann::json{{"table__", "series"}, {"series_id", series_id}, {"run_id", run_id}, {"key", key}};
@@ -47,15 +48,13 @@ void libjupiterli::save_series_dets(const string& series_id, const string& run_i
   }
 }
 
-
-map<string, string> series_ids;
 static pair<bool, string> get_series_id(const char* key)
 {
   auto it = series_ids.find(key);
   if (it != series_ids.end()) {
     return {false, (*it).second};
   }
-  new_series_id = run_id + "---" + ...;
+  auto new_series_id = run_id + "---" + std::to_string(std::hash<std::string>{}(key));
   series_ids[key] = new_series_id;
   return {true, new_series_id};
 }
@@ -67,10 +66,12 @@ void libjupiterli::add_ts_point(const char* key, double ts, double value)
     save_series_dets(series_id, run_id, key);
   }
   run_serial_num++;
-  nlohmann::json rec = nlohmann::json::array{
-      {{"table__", "series_points"}, {"series_id", series_id}, {"timestamp", ts}, {"value", value}, {"run_serial_num", run_serial_num}}}
-  };
-mtqqc.publish(std::format("telemetry/series/{}, series_id), rec);
+  auto rev = nlohmann::json::array({{"table__", "series_points"}, {"series_id", series_id}, {"timestamp", ts}, {"value", value}, {"run_serial_num", run_serial_num}});
+
+#pragma ("NB: disabled code")
+#if 0
+  mtqqc.publish(std::format("telemetry/series/{}", series_id), rec);
+#endif
 }
 
 void libjupiterli::add_serial_point(const char* key, double value)
