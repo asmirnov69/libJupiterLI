@@ -19,14 +19,14 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g -std=c++20 -Wall")
 #set(HTTPLIB_BUILD_TESTING OFF CACHE BOOL "" FORCE)
 #set(HTTPLIB_INSTALL OFF CACHE BOOL "" FORCE)
 #add_subdirectory(external/cpp-httplib ${CMAKE_BINARY_DIR}/cpp-httplib)
-add_subdirectory(external/cpp-httplib)
+add_subdirectory(external/cpp-httplib EXCLUDE_FROM_ALL)
 
 # mqtt
 set(PAHO_BUILD_TESTS OFF CACHE BOOL "" FORCE)
 set(PAHO_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
-add_subdirectory(external/paho.mqtt.embedded-c)
-include_directories(${top}/external/paho.mqtt.embedded-c/MQTTPacket/src)
+add_subdirectory(external/paho.mqtt.embedded-c EXCLUDE_FROM_ALL)
 
+include_directories(${top}/external/paho.mqtt.embedded-c/MQTTPacket/src)
 include_directories(${top}/include)
 
 add_subdirectory(src)
