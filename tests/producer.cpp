@@ -8,7 +8,7 @@ namespace jli = libjupiterli;
 
 int main()
 {
-  jli::save_run_dets();
+  jli::save_run_dets("example/producer");
   for (int i = 0; i < 100; i++) {
     double ts = std::chrono::duration<double>(std::chrono::system_clock::now().time_since_epoch()).count();
     cout << ts << " " << i << endl;

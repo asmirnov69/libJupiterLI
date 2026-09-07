@@ -12,7 +12,7 @@ string run_id = libjupiterli::make_uuid();
 unsigned long run_serial_num = 0;
 MqttSyncClient mqttc;
 
-void libjupiterli::save_run_dets()
+void libjupiterli::save_run_dets(const char* category)
 {
   if (mqttc.socket_fd == -1) {
     if (!mqttc.connect_to_broker("127.0.0.1", 1883, "libjuputerli")) {
@@ -21,7 +21,7 @@ void libjupiterli::save_run_dets()
   }
   
   httplib::Client cli("http://h1:8000");
-  auto req_j = get_run_dets(run_id);
+  auto req_j = get_run_dets(run_id, category);
   auto req = req_j.dump();
   if (auto res = cli.Post("/api/add-row", req, "application/json")) {
     cout << "save_run_dets: " << res->status << endl;

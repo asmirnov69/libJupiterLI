@@ -59,7 +59,7 @@ std::string libjupiterli::get_env(const char* key)
   return v ? std::string(v) : "";
 }
 
-nlohmann::json libjupiterli::get_run_dets(const string& run_id)
+nlohmann::json libjupiterli::get_run_dets(const string& run_id, const string& category)
 {
   char host[256];
   gethostname(host, sizeof(host));
@@ -89,6 +89,7 @@ nlohmann::json libjupiterli::get_run_dets(const string& run_id)
 
   auto row = nlohmann::json{{"table__", "runs"},
 			    {"run_id", run_id},
+			    {"category", category},
 			    {"created_ts", created_ts},
 			    {"host", std::string(host)},
 			    {"pid", pid},
